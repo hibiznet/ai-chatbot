@@ -7,3 +7,6 @@ python -m venv .venv
 # 3. 필수 패키지 설치
 pip install fastapi uvicorn jinja2 httpx python-multipart
 uvicorn main:app --reload --host 0.0.0.0 --port 80
+
+# 학습
+python .\embed_documents.py
