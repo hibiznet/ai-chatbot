@@ -1,0 +1,6 @@
+node_modules/
+dist/
+temp/
+my_postgres/postgres_data/
+my_home/.venv/
+my_home/__pycache__/

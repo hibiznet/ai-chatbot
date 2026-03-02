@@ -1,0 +1,13 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: my_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: hibiz
+      POSTGRES_USER: hibiznet
+      POSTGRES_PASSWORD: '!@1qazxsw2'
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
