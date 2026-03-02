@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from database import engine, get_db
@@ -9,12 +9,38 @@ import uuid
 app = FastAPI()
 
 db_posts = []
-
 templates = Jinja2Templates(directory="templates")
+
+#OLLAMA_URL = "http://my_ollama-gemma:11434/api/generate"
+OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_MODEL = "gemma3:4b"
+
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "posts": db_posts})
+
+@app.post("/chat")
+async def chat(message: str = Form(...)):
+    # Ollama에게 질문
+    async with httpx.AsyncClient() as client:
+        try:
+            r = await client.post(
+                OLLAMA_URL,
+                json={
+                    "model": OLLAMA_MODEL,
+                    "prompt": f"너는 하이비즈봇 상담원이야. 사용자 질문에 친절하고 짧게 답해줘.\n\n사용자: {message}\n어시스턴트:",
+                    "stream": False
+                },
+                timeout=60.0
+            )
+            bot = r.json().get("response", "").strip()
+            if not bot:
+                bot = "답변을 생성하지 못했어요. 다시 질문해 주세요."
+        except Exception as e:
+            bot = f"오류: {str(e)}"
+
+    return JSONResponse({"reply": bot})
 
 @app.post("/post")
 async def create_post(title: str = Form(...), content: str = Form(...)):

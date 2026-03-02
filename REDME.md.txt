@@ -1,3 +1,6 @@
 
 powershell
 & "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+
+로그 확인
+docker logs --tail 200 my_ollama-gemma

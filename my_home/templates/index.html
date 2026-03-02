@@ -116,31 +116,45 @@
         if (e.key === 'Enter') sendMessage();
     }
 
-    function sendMessage() {
+    async function sendMessage() {
         const input = document.getElementById('user-input');
         const messageContainer = document.getElementById('chat-messages');
-        
-        if (input.value.trim() === '') return;
+
+        const text = input.value.trim();
+        if (!text) return;
 
         // 사용자 메시지 추가
         const userDiv = document.createElement('div');
         userDiv.className = 'message user';
-        userDiv.textContent = input.value;
+        userDiv.textContent = text;
         messageContainer.appendChild(userDiv);
 
-        // 자동 스크롤
-        const messageText = input.value;
         input.value = '';
         messageContainer.scrollTop = messageContainer.scrollHeight;
 
-        // 봇 응답 시뮬레이션 (나중에 API 연결)
-        setTimeout(() => {
-            const botDiv = document.createElement('div');
-            botDiv.className = 'message bot';
-            botDiv.textContent = `'${messageText}'에 대해 Hibiz AI가 답변을 준비 중입니다...`;
-            messageContainer.appendChild(botDiv);
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-        }, 1000);
+        // 로딩 메시지(봇)
+        const botDiv = document.createElement('div');
+        botDiv.className = 'message bot';
+        botDiv.textContent = '답변 생성 중...';
+        messageContainer.appendChild(botDiv);
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+
+        try {
+        const form = new FormData();
+        form.append("message", text);
+
+        const res = await fetch("/chat", {
+            method: "POST",
+            body: form
+        });
+
+        const data = await res.json();
+        botDiv.textContent = data.reply || "응답이 비어있어요.";
+        } catch (e) {
+        botDiv.textContent = "서버 호출 중 오류가 발생했어요: " + e;
+        }
+
+        messageContainer.scrollTop = messageContainer.scrollHeight;
     }
 </script>
 <header>
