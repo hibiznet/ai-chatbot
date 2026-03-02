@@ -1,257 +1,329 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HiBizNet | 게시판</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* 기본 스타일 초기화 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; color: #333; line-height: 1.6; background-color: #f8f9fa; }
-        a { text-decoration: none; color: inherit; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HiBizNet | 게시판</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* 기본 스타일 초기화 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; color: #333; line-height: 1.6; background-color: #f8f9fa; }
+    a { text-decoration: none; color: inherit; }
 
-        /* 헤더 섹션 */
-        header { background-color: #fff; border-bottom: 2px solid #004a99; padding: 20px 0; sticky: top; position: sticky; top: 0; z-index: 1000; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: 800; color: #004a99; }
-        .nav-menu a { margin-left: 30px; font-weight: 600; font-size: 15px; }
+    /* 헤더 섹션 */
+    header { background-color: #fff; border-bottom: 2px solid #004a99; padding: 20px 0; position: sticky; top: 0; z-index: 1000; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .nav-wrapper { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 24px; font-weight: 800; color: #004a99; }
+    .nav-menu a { margin-left: 30px; font-weight: 600; font-size: 15px; }
 
-        /* 메인 게시판 영역 */
-        .board-header { margin-top: 50px; margin-bottom: 30px; border-left: 5px solid #004a99; padding-left: 15px; }
-        .board-header h2 { font-size: 28px; color: #222; }
+    /* 메인 게시판 영역 */
+    .board-header { margin-top: 50px; margin-bottom: 30px; border-left: 5px solid #004a99; padding-left: 15px; }
+    .board-header h2 { font-size: 28px; color: #222; }
 
-        .board-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .board-table th { background-color: #f1f4f9; padding: 15px; border-bottom: 1px solid #ddd; font-weight: 600; text-align: center; }
-        .board-table td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; font-size: 14px; }
-        .board-table .title-cell { text-align: left; width: 45%; }
-        .board-table tr:hover { background-color: #fcfcfc; cursor: pointer; }
+    .board-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .board-table th { background-color: #f1f4f9; padding: 15px; border-bottom: 1px solid #ddd; font-weight: 600; text-align: center; }
+    .board-table td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; font-size: 14px; }
+    .board-table .title-cell { text-align: left; width: 45%; }
+    .board-table tbody tr { transition: background 0.2s ease; }
+    .board-table tr:hover { background-color: #fcfcfc; cursor: pointer; }
+    .board-table tbody tr.selected { background: #eef5ff; }
 
-        /* 버튼 및 검색 */
-        .board-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; }
-        .search-box { display: flex; gap: 5px; }
-        .search-box input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; }
-        .btn { padding: 8px 20px; border-radius: 4px; font-weight: 600; transition: 0.3s; border: none; cursor: pointer; }
-        .btn-primary { background-color: #004a99; color: white; }
-        .btn-primary:hover { background-color: #003366; }
+    /* 버튼 및 검색 */
+    .board-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; }
+    .search-box { display: flex; gap: 5px; }
+    .search-box input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; }
+    .btn { padding: 8px 20px; border-radius: 4px; font-weight: 600; transition: 0.3s; border: none; cursor: pointer; }
+    .btn-primary { background-color: #004a99; color: white; }
+    .btn-primary:hover { background-color: #003366; }
 
-        /* 페이징 */
-        .pagination { display: flex; justify-content: center; margin-top: 40px; gap: 5px; }
-        .pagination span { padding: 5px 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 3px; }
-        .pagination span.active { background-color: #004a99; color: #fff; border-color: #004a99; }
+    /* 페이징 */
+    .pagination { display: flex; justify-content: center; margin-top: 40px; gap: 5px; }
+    .pagination span { padding: 5px 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 3px; }
+    .pagination span.active { background-color: #004a99; color: #fff; border-color: #004a99; }
 
-        /* 푸터 */
-        footer { margin-top: 80px; padding: 40px 0; background-color: #333; color: #ccc; font-size: 13px; }
- 
-        /* 챗봇 전체 컨테이너 */
-        #chatbot-wrapper {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1001;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
+    /* 상세보기 패널 */
+    #post-detail {
+      display: none;
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
 
-        /* 실행 버튼 */
-        #chatbot-toggle-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #004a99;
-            color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
-        }
+    /* 푸터 */
+    footer { margin-top: 80px; padding: 40px 0; background-color: #333; color: #ccc; font-size: 13px; }
 
-        #chatbot-toggle-btn:hover { transform: scale(1.1); }
+    /* 챗봇 전체 컨테이너 */
+    #chatbot-wrapper {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
 
-        /* 챗봇 대화창 */
-        #chatbot-window {
-            width: 350px;
-            height: 500px;
-            background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            animation: slideUp 0.3s ease;
-        }
+    /* 실행 버튼 */
+    #chatbot-toggle-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #004a99;
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+    #chatbot-toggle-btn:hover { transform: scale(1.1); }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* 챗봇 대화창 */
+    #chatbot-window {
+      width: 350px;
+      height: 500px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        /* 챗봇 내부 구성 */
-        .chatbot-header { background: #004a99; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .chatbot-header button { background: none; border: none; color: white; cursor: pointer; font-size: 18px; }
+    /* 챗봇 내부 구성 */
+    .chatbot-header { background: #004a99; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+    .chatbot-header button { background: none; border: none; color: white; cursor: pointer; font-size: 18px; }
+    .chatbot-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px; }
+    .message { padding: 10px 14px; border-radius: 15px; font-size: 14px; max-width: 80%; line-height: 1.4; }
+    .message.bot { background: #e9ecef; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .message.user { background: #004a99; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
 
-        .chatbot-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px; }
-        .message { padding: 10px 14px; border-radius: 15px; font-size: 14px; max-width: 80%; line-height: 1.4; }
-        .message.bot { background: #e9ecef; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .message.user { background: #004a99; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-
-        .chatbot-input { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 5px; }
-        .chatbot-input input { flex: 1; border: 1px solid #ddd; padding: 8px 12px; border-radius: 20px; outline: none; }
-        .chatbot-input button { background: none; border: none; color: #004a99; cursor: pointer; font-size: 20px; }
- 
-    </style>
+    .chatbot-input { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 5px; }
+    .chatbot-input input { flex: 1; border: 1px solid #ddd; padding: 8px 12px; border-radius: 20px; outline: none; }
+    .chatbot-input button { background: none; border: none; color: #004a99; cursor: pointer; font-size: 20px; }
+  </style>
 </head>
+
 <body>
 <script>
-    function toggleChat() {
-        const chatWindow = document.getElementById('chatbot-window');
-        chatWindow.style.display = (chatWindow.style.display === 'none') ? 'flex' : 'none';
+  function toggleChat() {
+    const chatWindow = document.getElementById('chatbot-window');
+    chatWindow.style.display = (chatWindow.style.display === 'none') ? 'flex' : 'none';
+  }
+
+  function handleKeyPress(e) {
+    if (e.key === 'Enter') sendMessage();
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const messageContainer = document.getElementById('chat-messages');
+
+    const text = input.value.trim();
+    if (!text) return;
+
+    // 사용자 메시지 추가
+    const userDiv = document.createElement('div');
+    userDiv.className = 'message user';
+    userDiv.textContent = text;
+    messageContainer.appendChild(userDiv);
+
+    input.value = '';
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+
+    // 로딩 메시지(봇)
+    const botDiv = document.createElement('div');
+    botDiv.className = 'message bot';
+    botDiv.textContent = '답변 생성 중...';
+    messageContainer.appendChild(botDiv);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+
+    try {
+      const form = new FormData();
+      form.append("message", text);
+
+      const res = await fetch("/chat", { method: "POST", body: form });
+      const data = await res.json();
+
+      botDiv.textContent = data.reply || "응답이 비어있어요.";
+    } catch (e) {
+      botDiv.textContent = "서버 호출 중 오류가 발생했어요: " + e;
     }
 
-    function handleKeyPress(e) {
-        if (e.key === 'Enter') sendMessage();
-    }
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+  }
 
-    async function sendMessage() {
-        const input = document.getElementById('user-input');
-        const messageContainer = document.getElementById('chat-messages');
+  // =========================
+  // 게시글 상세보기 (테이블 행 클릭)
+  // =========================
+  const POST_CONTENTS = {
+    "3": "안녕하세요.\n챗봇 시스템이 업데이트되었습니다.\n- 응답 속도 개선\n- 지식 기반 답변(RAG) 적용\n문의사항은 게시글로 남겨주세요.",
+    "2": "HIBIZ 솔루션 DB 연결 방법 안내입니다.\n1) .env에 DATABASE_URL 설정\n2) 컨테이너 네트워크 확인\n3) 접속 테스트: select 1\n\n문제가 지속되면 관리자에게 문의해주세요.",
+    "1": "신규 서비스 가입을 환영합니다!\n자주 묻는 질문(FAQ)을 확인해보세요.\n추가 문의는 하이비즈봇 채팅 또는 게시판에 남겨주세요."
+  };
 
-        const text = input.value.trim();
-        if (!text) return;
+  function closeDetail() {   
+    const detail = document.getElementById('post-detail');
+    detail.style.display = 'none';
+    document.querySelectorAll('.board-table tbody tr').forEach(tr => tr.classList.remove('selected'));
+  }
 
-        // 사용자 메시지 추가
-        const userDiv = document.createElement('div');
-        userDiv.className = 'message user';
-        userDiv.textContent = text;
-        messageContainer.appendChild(userDiv);
+  function openDetail({ no, title, author, date, views }) {
+    document.getElementById('detail-title').textContent = title;
+    document.getElementById('detail-author').textContent = author;
+    document.getElementById('detail-date').textContent = date;
+    document.getElementById('detail-views').textContent = views;
 
-        input.value = '';
-        messageContainer.scrollTop = messageContainer.scrollHeight;
+    const content = POST_CONTENTS[no] || "상세 내용이 없습니다.";
+    document.getElementById('detail-content').textContent = content;
 
-        // 로딩 메시지(봇)
-        const botDiv = document.createElement('div');
-        botDiv.className = 'message bot';
-        botDiv.textContent = '답변 생성 중...';
-        messageContainer.appendChild(botDiv);
-        messageContainer.scrollTop = messageContainer.scrollHeight;
+    const detail = document.getElementById('post-detail');
+    detail.style.display = 'block';
+    detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-        try {
-        const form = new FormData();
-        form.append("message", text);
+  function attachRowClickHandlers() {
+    const rows = document.querySelectorAll('.board-table tbody tr');
+    rows.forEach(tr => {
+      tr.addEventListener('click', () => {
+        rows.forEach(r => r.classList.remove('selected'));
+        tr.classList.add('selected');
 
-        const res = await fetch("/chat", {
-            method: "POST",
-            body: form
-        });
+        const no = tr.children[0].textContent.trim();
+        const title = tr.children[1].textContent.trim();
+        const author = tr.children[2].textContent.trim();
+        const date = tr.children[3].textContent.trim();
+        const views = tr.children[4].textContent.trim();
 
-        const data = await res.json();
-        botDiv.textContent = data.reply || "응답이 비어있어요.";
-        } catch (e) {
-        botDiv.textContent = "서버 호출 중 오류가 발생했어요: " + e;
-        }
+        openDetail({ no, title, author, date, views });
+      });
+    });
+  }
 
-        messageContainer.scrollTop = messageContainer.scrollHeight;
-    }
+  window.addEventListener('DOMContentLoaded', attachRowClickHandlers);
 </script>
+
 <header>
-    <div class="container nav-wrapper">
-        <div class="logo">HIBIZNET</div>
-        <nav class="nav-menu">
-            <a href="#">회사소개</a>
-            <a href="#">솔루션</a>
-            <a href="#" style="color:#004a99">고객지원</a>
-            <a href="#">로그인</a>
-        </nav>
-    </div>
+  <div class="container nav-wrapper">
+    <div class="logo">HIBIZNET</div>
+    <nav class="nav-menu">
+      <a href="#">회사소개</a>
+      <a href="#">솔루션</a>
+      <a href="#" style="color:#004a99">고객지원</a>
+      <a href="#">로그인</a>
+    </nav>
+  </div>
 </header>
 
 <main class="container">
-    <div class="board-header">
-        <h2>하이비즈봇 문의</h2>
-        <p>HIBIZNET의 새로운 소식과 기술 지원 게시판입니다.</p>
-    </div>
+  <div class="board-header">
+    <h2>하이비즈봇 문의</h2>
+    <p>HIBIZNET의 새로운 소식과 기술 지원 게시판입니다.</p>
+  </div>
 
-    <table class="board-table">
-        <thead>
-            <tr>
-                <th style="width: 80px;">번호</th>
-                <th>제목</th>
-                <th style="width: 120px;">작성자</th>
-                <th style="width: 120px;">날짜</th>
-                <th style="width: 80px;">조회</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>3</td>
-                <td class="title-cell"><b>[공지]</b> 챗봇 시스템 업그레이드 안내</td>
-                <td>관리자</td>
-                <td>2024-05-20</td>
-                <td>124</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td class="title-cell">HIBIZ 솔루션 데이터베이스 연결 설정 방법</td>
-                <td>hibiznet</td>
-                <td>2024-05-18</td>
-                <td>85</td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td class="title-cell">신규 서비스 가입을 환영합니다.</td>
-                <td>관리자</td>
-                <td>2024-05-15</td>
-                <td>42</td>
-            </tr>
-        </tbody>
-    </table>
+  <table class="board-table">
+    <thead>
+      <tr>
+        <th style="width: 80px;">번호</th>
+        <th>제목</th>
+        <th style="width: 120px;">작성자</th>
+        <th style="width: 120px;">날짜</th>
+        <th style="width: 80px;">조회</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>3</td>
+        <td class="title-cell"><b>[공지]</b> 챗봇 시스템 업그레이드 안내</td>
+        <td>관리자</td>
+        <td>2024-05-20</td>
+        <td>124</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td class="title-cell">HIBIZ 솔루션 데이터베이스 연결 설정 방법</td>
+        <td>hibiznet</td>
+        <td>2024-05-18</td>
+        <td>85</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td class="title-cell">신규 서비스 가입을 환영합니다.</td>
+        <td>관리자</td>
+        <td>2024-05-15</td>
+        <td>42</td>
+      </tr>
+    </tbody>
+  </table>
 
-    <div class="board-footer">
-        <div class="search-box">
-            <input type="text" placeholder="검색어를 입력하세요">
-            <button class="btn btn-primary">검색</button>
+  <!-- ✅ 상세보기 패널 -->
+  <div id="post-detail">
+    <div style="padding:16px 18px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div id="detail-title" style="font-weight:800; font-size:16px; color:#222;"></div>
+        <div style="margin-top:6px; font-size:13px; color:#666;">
+          <span id="detail-author"></span> · <span id="detail-date"></span> · 조회 <span id="detail-views"></span>
         </div>
-        <button class="btn btn-primary">글쓰기</button>
+      </div>
+      <button onclick="closeDetail()" style="border:none;background:none;cursor:pointer;font-size:18px;color:#666;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
+    <div id="detail-content" style="padding:18px; font-size:14px; color:#333; line-height:1.7; white-space:pre-wrap;"></div>
+  </div>
 
-    <div class="pagination">
-        <span><i class="fa-solid fa-chevron-left"></i></span>
-        <span class="active">1</span>
-        <span>2</span>
-        <span>3</span>
-        <span><i class="fa-solid fa-chevron-right"></i></span>
+  <div class="board-footer">
+    <div class="search-box">
+      <input type="text" placeholder="검색어를 입력하세요">
+      <button class="btn btn-primary">검색</button>
     </div>
+    <button class="btn btn-primary">글쓰기</button>
+  </div>
 
-    <div id="chatbot-wrapper">
+  <div class="pagination">
+    <span><i class="fa-solid fa-chevron-left"></i></span>
+    <span class="active">1</span>
+    <span>2</span>
+    <span>3</span>
+    <span><i class="fa-solid fa-chevron-right"></i></span>
+  </div>
+
+  <div id="chatbot-wrapper">
     <div id="chatbot-window" style="display: none;">
-        <div class="chatbot-header">
-            <span><i class="fa-solid fa-robot"></i> 하이비즈봇 AI 어시스턴트</span>
-            <button onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="chatbot-messages" id="chat-messages">
-            <div class="message bot">안녕하세요! 하이비즈봇에 오신 것을 환영합니다. 무엇을 도와드릴까요?</div>
-        </div>
-        <div class="chatbot-input">
-            <input type="text" id="user-input" placeholder="메시지를 입력하세요..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
+      <div class="chatbot-header">
+        <span><i class="fa-solid fa-robot"></i> 하이비즈봇 AI 어시스턴트</span>
+        <button onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="chatbot-messages" id="chat-messages">
+        <div class="message bot">안녕하세요! 하이비즈봇에 오신 것을 환영합니다. 무엇을 도와드릴까요?</div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="user-input" placeholder="메시지를 입력하세요..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
     </div>
 
     <button id="chatbot-toggle-btn" onclick="toggleChat()">
-        <i class="fa-solid fa-comment-dots"></i>
+      <i class="fa-solid fa-comment-dots"></i>
     </button>
-</div>
+  </div>
 </main>
 
 <footer>
-    <div class="container">
-        <p>Copyright &copy; 2024 HIBIZNET. All Rights Reserved.</p>
-        <p style="margin-top:10px;">주소: 서울 강서구 마곡동 759-1 두산더랜드타워 B동 607호 | 연락처: 010-2740-7212</p>
-    </div>
+  <div class="container">
+    <p>Copyright &copy; 2024 HIBIZNET. All Rights Reserved.</p>
+    <p style="margin-top:10px;">주소: 서울 강서구 마곡동 759-1 두산더랜드타워 B동 607호 | 연락처: 010-2740-7212</p>
+  </div>
 </footer>
 
 </body>
