@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+jinja2
+httpx
+python-multipart
+sqlalchemy
+psycopg2-binary
+python-dotenv
+pgvector
+numpy

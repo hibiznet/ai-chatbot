@@ -18,7 +18,7 @@ OLLAMA_GEN_URL = f"{OLLAMA_BASE}/api/generate"
 OLLAMA_EMBED_URL = f"{OLLAMA_BASE}/api/embeddings"
 
 # 생성 모델 / 임베딩 모델
-OLLAMA_MODEL = "gemma3:4b"
+OLLAMA_MODEL = "gemma:2b"
 EMBED_MODEL = "nomic-embed-text"
 
 # RAG 검색 문서 개수
