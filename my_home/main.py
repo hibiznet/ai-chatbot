@@ -2,23 +2,37 @@ from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from database import engine
 import httpx
 import uuid
+import os
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+
+# CORS 설정 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 실제 서비스에서는 보안을 위해 도메인을 지정해야 합니다.
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# 템플릿 경로를 절대 경로로 설정
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 # =========================
 # Ollama 설정
 # =========================
-OLLAMA_BASE = "http://localhost:11434"
+OLLAMA_BASE = "http://localhost:11434" # host.docker.internal is for docker-to-host
 OLLAMA_GEN_URL = f"{OLLAMA_BASE}/api/generate"
 OLLAMA_EMBED_URL = f"{OLLAMA_BASE}/api/embeddings"
 
 # 생성 모델 / 임베딩 모델
-OLLAMA_MODEL = "gemma:2b"
+OLLAMA_MODEL = "gemma3:4b"
 EMBED_MODEL = "nomic-embed-text"
 
 # RAG 검색 문서 개수
@@ -101,16 +115,22 @@ async def ollama_generate(client: httpx.AsyncClient, prompt: str) -> str:
 # =========================
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    # documents 목록을 DB에서 가져와서 index.html에 넘김
-    with engine.connect() as conn:
-        posts = conn.execute(text("""
-            SELECT id, title, author, created_dt, view_count
-            FROM public.documents
-            ORDER BY id DESC
-            LIMIT 50
-        """)).mappings().all()
+    try:
+        # documents 목록을 DB에서 가져와서 index.html에 넘김
+        with engine.connect() as conn:
+            posts = conn.execute(text("""
+                SELECT id, title, author, created_dt, view_count
+                FROM public.documents
+                ORDER BY id DESC
+                LIMIT 50
+            """)).mappings().all()
 
-    return templates.TemplateResponse("index.html", {"request": request, "posts": posts})
+        return templates.TemplateResponse("index.html", {"request": request, "posts": posts})
+    except Exception as e:
+        import traceback
+        print(f">>> Home page error: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # =========================

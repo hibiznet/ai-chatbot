@@ -173,11 +173,16 @@
       const form = new FormData();
       form.append("message", text);
 
+      // 브라우저 주소창이 file:// 로 시작하는 경우를 체크
+      if (window.location.protocol === 'file:') {
+        throw new Error("브라우저에서 직접 파일을 열지 말고 http://localhost/ 로 접속해 주세요.");
+      }
+
       const res = await fetch("/chat", { method: "POST", body: form });
       const data = await res.json();
       botDiv.textContent = data.reply || "응답이 비어있어요.";
     } catch (e) {
-      botDiv.textContent = "서버 호출 중 오류가 발생했어요: " + e;
+      botDiv.textContent = "서버 호출 중 오류가 발생했어요: " + e.message;
     }
     messageContainer.scrollTop = messageContainer.scrollHeight;
   }

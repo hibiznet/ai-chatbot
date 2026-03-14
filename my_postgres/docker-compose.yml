@@ -6,8 +6,8 @@ services:
     environment:
       POSTGRES_DB: hibiz
       POSTGRES_USER: hibiznet
-      POSTGRES_PASSWORD: '!@1qazxsw2'
+      POSTGRES_PASSWORD: 'hibiz1234!'
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
